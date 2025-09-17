@@ -1,5 +1,6 @@
 const API_URL = 'https://script.google.com/macros/s/AKfycbyox9bA8M85rlMtEYgKTcrjOyASAVSFdSNRl0rWnHnBCyMc8pz1NB41g8jkWtxU7DLX/exec';
 const REFRESH_INTERVAL = 20000; // 20 giây
+const laytop = 10;
 
 const leaderboardEl = document.getElementById('leaderboard');
 const statusEl = document.getElementById('status');
@@ -29,25 +30,29 @@ function updateLeaderboard(newData) {
         return;
     }
 
-    const hasChanges = newData.length !== previousData.length || 
-        newData.some((newItem, index) => {
-            const oldItem = previousData[index];
+    // So sánh dữ liệu chỉ với top 5
+    const hasChanges = 
+        (newData.length < laytop && previousData.length >= laytop) || 
+        (newData.length >= laytop && previousData.length < laytop) ||
+        newData.slice(0, laytop).some((newItem, index) => {
+            const oldItem = previousData.slice(0, laytop)[index];
             return !oldItem || oldItem.name !== newItem.name || oldItem.score !== newItem.score;
         });
 
     if (hasChanges) {
         renderLeaderboardWithAnimation(newData);
     } else {
-        console.log("Không có sự thay đổi thứ hạng.");
+        console.log("Không có sự thay đổi thứ hạng trong top 5.");
     }
 }
 
 function renderLeaderboard(data) {
     leaderboardEl.innerHTML = '';
-    data.forEach((player, index) => {
+    // Chỉ lặp qua 5 người đầu tiên
+    data.slice(0, laytop).forEach((player, index) => {
         const li = document.createElement('li');
         li.className = 'leaderboard-item';
-        li.dataset.name = player.name; // Lưu tên để dễ dàng tìm kiếm
+        li.dataset.name = player.name;
         li.innerHTML = `
             <span class="rank">${index + 1}</span>
             <span class="name">${player.name}</span>
@@ -62,10 +67,10 @@ function renderLeaderboardWithAnimation(data) {
         Array.from(leaderboardEl.children).map(item => [item.dataset.name, item.getBoundingClientRect().top])
     );
 
-    leaderboardEl.innerHTML = ''; // Xóa toàn bộ danh sách cũ
+    leaderboardEl.innerHTML = '';
 
-    // Tạo các mục mới và thêm vào DOM
-    data.forEach(player => {
+    // Chỉ lặp qua 5 người đầu tiên
+    data.slice(0, 5).forEach(player => {
         const li = document.createElement('li');
         li.className = 'leaderboard-item';
         li.dataset.name = player.name;
@@ -77,27 +82,21 @@ function renderLeaderboardWithAnimation(data) {
         leaderboardEl.appendChild(li);
     });
 
-    // Lấy vị trí mới và áp dụng hiệu ứng
     Array.from(leaderboardEl.children).forEach((newItem, index) => {
         const newRect = newItem.getBoundingClientRect();
         const oldTop = oldItems.get(newItem.dataset.name);
 
-        // Cập nhật lại rank
         newItem.querySelector('.rank').textContent = index + 1;
 
         if (oldTop !== undefined) {
             const deltaY = oldTop - newRect.top;
             
-            // Di chuyển phần tử về vị trí cũ
             newItem.style.transform = `translateY(${deltaY}px)`;
             
-            // Đảm bảo trình duyệt nhận ra sự thay đổi
             newItem.offsetHeight; 
             
-            // Chuyển về vị trí mới
             newItem.style.transform = `translateY(0)`;
         } else {
-            // Phần tử mới, cho nó hiệu ứng fade-in và bay lên từ dưới
             newItem.style.opacity = '0';
             newItem.style.transform = 'translateY(20px)';
             newItem.offsetHeight;
