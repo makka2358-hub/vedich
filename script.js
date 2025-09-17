@@ -1,6 +1,6 @@
 const API_URL = 'https://script.google.com/macros/s/AKfycbyox9bA8M85rlMtEYgKTcrjOyASAVSFdSNRl0rWnHnBCyMc8pz1NB41g8jkWtxU7DLX/exec';
 const REFRESH_INTERVAL = 20000; // 20 giây
-const laytop = 10;
+const laytop = 7;
 
 const leaderboardEl = document.getElementById('leaderboard');
 const statusEl = document.getElementById('status');
@@ -109,3 +109,4 @@ function renderLeaderboardWithAnimation(data) {
 fetchData();
 
 setInterval(fetchData, REFRESH_INTERVAL);
+
