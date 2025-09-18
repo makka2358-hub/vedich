@@ -7,6 +7,58 @@ const statusEl = document.getElementById('status');
 let previousData = [];
 let isInitialLoad = true;
 
+function confettiCelebration() {
+    const duration = 2000; // 2 giây
+    const end = Date.now() + duration;
+
+    (function frame() {
+        // Bắn từ bên trái
+        confetti({
+            particleCount: 7,
+            angle: 60,
+            spread: 70,
+            origin: { x: 0, y: 0.6 } // từ trái, cao ngang giữa
+        });
+
+        // Bắn từ bên phải
+        confetti({
+            particleCount: 7,
+            angle: 120,
+            spread: 70,
+            origin: { x: 1, y: 0.6 } // từ phải, cao ngang giữa
+        });
+
+        // Lặp lại cho đến khi hết thời gian
+        if (Date.now() < end) {
+            requestAnimationFrame(frame);
+        }
+    })();
+}
+
+function launchConfetti() {
+    const duration = 2 * 1000;
+    const end = Date.now() + duration;
+
+    (function frame() {
+        confetti({
+            particleCount: 5,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 }
+        });
+        confetti({
+            particleCount: 5,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 }
+        });
+
+        if (Date.now() < end) {
+            requestAnimationFrame(frame);
+        }
+    })();
+}
+
 async function fetchData() {
     try {
         const response = await fetch(API_URL);
@@ -41,6 +93,8 @@ function updateLeaderboard(newData) {
 
     if (hasChanges) {
         renderLeaderboardWithAnimation(newData);
+        launchConfetti();
+        
     } else {
         console.log("Không có sự thay đổi thứ hạng trong top 5.");
     }
@@ -109,5 +163,4 @@ function renderLeaderboardWithAnimation(data) {
 fetchData();
 
 setInterval(fetchData, REFRESH_INTERVAL);
-
 
