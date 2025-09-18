@@ -12,6 +12,10 @@ body {
     padding: 20px;
 }
 
+.logo {
+    padding-right: 16px;
+}
+
 .container {
     width: 100%;
     max-width: 600px;
@@ -23,9 +27,11 @@ body {
 }
 
 h1 {
+    display: flex;
     color: #4CAF50;
     margin-bottom: 25px;
     font-size: 2.5em;
+    align-items: center;
 }
 
 .leaderboard-list {
